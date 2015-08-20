@@ -18,5 +18,6 @@ SOURCES += main.cpp \
 
 HEADERS += \
     map.h \
-    actor.h
+    actor.h \
+    enums.h
 
