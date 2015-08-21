@@ -9,12 +9,19 @@
 
 using namespace sf;
 
-int main()
+int main(int argc, char **argv)
 {
-	RenderWindow window(VideoMode(640, 640, 32), "Sokoban game");
+	RenderWindow window(VideoMode(928, 640, 32), "Sokoban game");
+
+	int currLevel =0;
+	if(argc>1){
+
+		currLevel=atoi(argv[1]);
+	}
+	std::cout<< currLevel << std::endl;
 
 	Actor actor;
-	Map map(&actor);
+	Map map(currLevel);
 
 	while(window.IsOpened())
 	{
@@ -41,20 +48,16 @@ int main()
 			if(event.Type == Event::KeyPressed && event.Key.Code == Key::Down){
 				actor.move(Down, &map);
 			}
-
 		}
+
 
 		//Clearing window
 		window.Clear();
 
 		map.draw(&window);
 
-
 		// Drawing
 		window.Display();
 	}
-
-
-
 	return 0;
 }

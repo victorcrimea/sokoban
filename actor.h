@@ -21,6 +21,8 @@ public:
 	Actor();
 	void put(int x, int y);
 	void move(Direction dir, Map *map);
+	bool isFinished(Map *map);
+	void getPosition(Map *map);
 };
 
 #endif // ACTOR_H

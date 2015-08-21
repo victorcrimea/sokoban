@@ -24,6 +24,7 @@ void Actor::put(int x, int y){
 
 void Actor::move(Direction dir, Map *map){
 
+	getPosition(map);
 	Tile &current = map->tile[y][x];
 	if(dir == Left){
 		Tile &next = map->tile[y][x-1];
@@ -43,23 +44,29 @@ void Actor::move(Direction dir, Map *map){
 		if(performMove(&current, &next, &nextNext)) y+= 1;
 	}
 
-	if(x>(MAPX-1)) x=MAPX-1;
-	if(y>(MAPY-1)) y=MAPY-1;
+	if(x>(map->getSizeX()-1)) x=map->getSizeX()-1;
+	if(y>(map->getSizeY()-1)) y=map->getSizeY()-1;
 	if(x<0) x=0;
 	if(y<0) y=0;
 
 	update();
+
+	if(isFinished(map)){
+		std::cout<< "Level finished" << std::endl;
+		map->nextLevel();
+	}
 }
 
 void Actor::update(){
 	sprite.SetPosition(x*RESOLUTION, y*RESOLUTION);
-	std::cout << "x=" << x <<"; y=" << y <<std::endl;
+	//std::cout << "x=" << x <<"; y=" << y <<std::endl;
 }
 bool Actor::performMove(Tile *current, Tile *next, Tile *nextNext){
 	if(*next!=Wall){
 		if(*next==Box ){ //Box meeting
 			if(*nextNext==Exit){ //When we successfully moving box to the exit
 				*next=GrassPlayer;
+				*nextNext=ExitBox;
 				if(*current==GrassPlayer){
 					*current=Grass;
 				}else {
@@ -69,6 +76,26 @@ bool Actor::performMove(Tile *current, Tile *next, Tile *nextNext){
 			}else if(*nextNext==Grass){
 				*nextNext=Box;
 				*next=GrassPlayer;
+				if(*current==GrassPlayer){
+					*current=Grass;
+				}else {
+					*current=Exit;
+				}
+				return true;
+			}
+		}else if(*next==ExitBox ){ //ExitBox meeting
+			if(*nextNext==Exit){ //When we successfully moving Exitbox to the exit
+				*next=ExitPlayer;
+				*nextNext=ExitBox;
+				if(*current==GrassPlayer){
+					*current=Grass;
+				}else {
+					*current=Exit;
+				}
+				return true;
+			}else if(*nextNext==Grass){
+				*nextNext=Box;
+				*next=ExitPlayer;
 				if(*current==GrassPlayer){
 					*current=Grass;
 				}else {
@@ -97,3 +124,32 @@ bool Actor::performMove(Tile *current, Tile *next, Tile *nextNext){
 	return false;
 }
 
+bool Actor::isFinished(Map *map){
+	int sizeX = map->getSizeX();
+	int sizeY = map->getSizeY();
+	int freeBoxes=0;
+
+	for(int i=0; i<sizeY; i++){
+		for(int j=0; j<sizeX; j++){
+			if(map->tile[i][j]==Box) freeBoxes++;
+			//std::cout << "i=" << i << "; j=" << j << "; boxes="<< freeBoxes<< std::endl;
+		}
+	}
+
+	if(freeBoxes==0) return true;
+	return false;
+}
+
+void Actor::getPosition(Map *map){
+	int sizeX = map->getSizeX();
+	int sizeY = map->getSizeY();
+	for(int i=0; i<sizeY; i++){
+		for(int j=0; j<sizeX; j++){
+			if(map->tile[i][j]==GrassPlayer || map->tile[i][j]==ExitPlayer) {
+				x=j;
+				y=i;
+			}
+
+		}
+	}
+}

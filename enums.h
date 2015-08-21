@@ -1,9 +1,10 @@
 #ifndef ENUMS_H
 #define ENUMS_H
-enum Direction {Left, Up, Right, Down};
-enum Tile {Wall, Grass, Box, Exit, GrassPlayer, ExitPlayer};
 
-const int RESOLUTION = 64;
-const int MAPX=10;
-const int MAPY=10;
+enum Direction {Left, Up, Right, Down};
+enum Tile {Wall, Grass, Box, Exit, GrassPlayer, ExitPlayer, ExitBox};
+
+const int RESOLUTION = 32;
+const int MAPX=29;
+const int MAPY=20;
 #endif // ENUMS_H

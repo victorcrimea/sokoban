@@ -6,22 +6,17 @@
 #include "map.h"
 #include "enums.h"
 #include "actor.h"
+#include "levels.h"
 
 using namespace sf;
 
-Map::Map(Actor *actor){
-	for(int i=0; i<MAPY; i++){
-		for(int j=0; j<MAPX; j++){
-			if(tileMap[i][j]=='X') tile[i][j]=Wall;
-			if(tileMap[i][j]==' ') tile[i][j]=Grass;
-			if(tileMap[i][j]=='B') tile[i][j]=Box;
-			if(tileMap[i][j]=='O') tile[i][j]=Exit;
-			if(tileMap[i][j]=='P') {
-				tile[i][j]=GrassPlayer;
-				actor->put(j,i);
-			}
-		}
-	}
+Map::Map(int level){
+	sizeX=10;
+	sizeY=10;
+
+	currLevel = level;
+	loadLevel(level);
+
 	loadTextures();
 }
 void Map::loadTextures(){
@@ -45,34 +40,50 @@ void Map::loadTextures(){
 	{
 		std::cout << "Cannot load player" << std::endl;
 	}
+	if (!exitBoxTexture.LoadFromFile("textures/boxExit.png"))
+	{
+		std::cout << "Cannot load exitBox" << std::endl;
+	}
 }
 
 void Map::draw(RenderWindow *window){
-	for(int i=0; i<MAPY; i++){
-		for(int j=0; j<MAPX; j++){
+	for(int i=0; i<sizeY; i++){
+		for(int j=0; j<sizeX; j++){
 			if(tile[i][j]==Wall){
 				Sprite wall;
 				wall.SetImage(wallTexture);
+				wall.Resize(RESOLUTION,RESOLUTION);
 				wall.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				window->Draw(wall);
 			}
 			if(tile[i][j]==Grass){
 				Sprite grass;
 				grass.SetImage(grassTexture);
+				grass.Resize(RESOLUTION,RESOLUTION);
 				grass.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				window->Draw(grass);
 			}
 			if(tile[i][j]==Box){
 				Sprite box;
 				box.SetImage(boxTexture);
+				box.Resize(RESOLUTION,RESOLUTION);
 				box.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				window->Draw(box);
+			}
+			if(tile[i][j]==ExitBox){
+				Sprite exitBox;
+				exitBox.SetImage(exitBoxTexture);
+				exitBox.Resize(RESOLUTION,RESOLUTION);
+				exitBox.SetPosition(j*RESOLUTION, i*RESOLUTION);
+				window->Draw(exitBox);
 			}
 			if(tile[i][j]==Exit){
 				Sprite exit;
 				Sprite grass;
 				exit.SetImage(exitTexture);
 				grass.SetImage(grassTexture);
+				exit.Resize(RESOLUTION,RESOLUTION);
+				grass.Resize(RESOLUTION,RESOLUTION);
 				exit.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				grass.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				window->Draw(grass);
@@ -83,6 +94,8 @@ void Map::draw(RenderWindow *window){
 				Sprite grass;
 				player.SetImage(playerTexture);
 				grass.SetImage(grassTexture);
+				player.Resize(RESOLUTION,RESOLUTION);
+				grass.Resize(RESOLUTION,RESOLUTION);
 				player.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				grass.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				window->Draw(grass);
@@ -97,6 +110,10 @@ void Map::draw(RenderWindow *window){
 				grass.SetImage(grassTexture);
 				exit.SetImage(exitTexture);
 
+				exit.Resize(RESOLUTION,RESOLUTION);
+				player.Resize(RESOLUTION,RESOLUTION);
+				grass.Resize(RESOLUTION,RESOLUTION);
+
 				player.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				grass.SetPosition(j*RESOLUTION, i*RESOLUTION);
 				exit.SetPosition(j*RESOLUTION, i*RESOLUTION);
@@ -107,4 +124,37 @@ void Map::draw(RenderWindow *window){
 			}
 		}
 	}
+
+}
+
+int Map::getSizeX(){
+	return sizeX;
+}
+int Map::getSizeY(){
+	return sizeY;
+}
+
+void Map::loadLevel(int level){
+	Levels levels;
+	tile.clear();
+
+	std::cout << "Loading level " << level << "..." << std::endl;
+	levels.getLevel(&tile, level);
+	this->sizeY = tile.size();
+	this->sizeX = tile[0].size();
+
+}
+void Map::print(){
+
+	for(int i=0; i<sizeY; i++){
+		for(int j=0; j<sizeX; j++){
+			std::cout << tile[i][j];
+		}
+		std::cout << std::endl;
+	}
+}
+
+void Map::nextLevel(){
+	currLevel++;
+	loadLevel(currLevel);
 }

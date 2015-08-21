@@ -5,6 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
+#include <vector>
 #include "enums.h"
 #include "actor.h"
 
@@ -18,41 +19,34 @@ private:
 	Image boxTexture;
 	Image exitTexture;
 	Image playerTexture;
+	Image exitBoxTexture;
+	int sizeX;
+	int sizeY;
+	int currLevel;
 
-/*	std::string tileMap[MAPY]= {
-		"XXXXXXXXXX",
-		"X        X",
-		"X        X",
-		"X   P    X",
-		"X  XXX   X",
-		"X  B B   X",
-		"X   O    X",
-		"X        X",
-		"X        X",
-		"XXXXXXXXXX"};
-*/
-
-	std::string tileMap[MAPY]= {
+	std::vector<std::string> tileMap= {
 			"XXXXXXXXXX",
 			"X        X",
-			"X   BXXX X",
-			"XX  P    X",
+			"X   *XXX X",
+			"XX  @    X",
 			"XX XXX X X",
-			"XX B B XOX",
-			"X   O  X X",
-			"X   X  X X",
+			"XX * * X.X",
+			"X    X X.X",
+			"X   X  X.X",
 			"X        X",
 			"XXXXXXXXXX"};
 
 	void loadTextures();
 
 public:
-	Map(Actor *actor);
-	Tile tile[MAPY][MAPX];
-
-
+	Map(int level);
+	std::vector<std::vector<Tile>> tile;
 	void draw(RenderWindow *window);
-
+	int getSizeX();
+	int getSizeY();
+	void loadLevel(int level);
+	void print();
+	void nextLevel();
 };
 
 #endif // MAP_H

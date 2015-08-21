@@ -14,10 +14,12 @@ LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-window -lsfml-system
 
 SOURCES += main.cpp \
     map.cpp \
-    actor.cpp
+    actor.cpp \
+    levels.cpp
 
 HEADERS += \
     map.h \
     actor.h \
-    enums.h
+    enums.h \
+    levels.h
 
